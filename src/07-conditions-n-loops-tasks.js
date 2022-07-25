@@ -1,3 +1,6 @@
+/* eslint-disable curly */
+/* eslint-disable nonblock-statement-body-position */
+/* eslint-disable operator-linebreak */
 /* *************************************************************************************************
  *                                                                                                *
  * Please read the following tutorial before implementing tasks:                                   *
@@ -390,8 +393,17 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  const pathFolders = pathes.map((el) => el.split('/'));
+  const pathesRepeat = pathFolders.flat().filter(
+    (el, i, arr) =>
+      // eslint-disable-next-line comma-dangle, implicit-arrow-linebreak
+      arr.indexOf(el) !== arr.lastIndexOf(el) && arr.includes(el, i + 1)
+  );
+  const path = pathesRepeat
+    .filter((el) => pathFolders.every((str) => str.includes(el)))
+    .join('/');
+  return path.length > 1 ? `${path}/` : path;
 }
 
 /**
@@ -412,8 +424,19 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const arr = [];
+  for (let i = 0; i < m1.length; i += 1) {
+    arr[i] = [];
+    for (let j = 0; j < m2[0].length; j += 1) {
+      let sum = 0;
+      for (let x = 0; x < m1[0].length; x += 1) {
+        sum += m1[i][x] * m2[x][j];
+      }
+      arr[i][j] = sum;
+    }
+  }
+  return arr;
 }
 
 /**
@@ -446,8 +469,58 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  for (let i = 0; i < 3; i += 1) {
+    if (
+      position[i][0] === 'X' &&
+      position[i][1] === 'X' &&
+      position[i][2] === 'X'
+    )
+      return 'X';
+    if (
+      position[i][0] === '0' &&
+      position[i][1] === '0' &&
+      position[i][2] === '0'
+    )
+      return '0';
+    if (
+      position[0][i] === 'X' &&
+      position[1][i] === 'X' &&
+      position[2][i] === 'X'
+    )
+      return 'X';
+    if (
+      position[0][i] === '0' &&
+      position[1][i] === '0' &&
+      position[2][i] === '0'
+    )
+      return '0';
+  }
+  if (
+    position[0][0] === 'X' &&
+    position[1][1] === 'X' &&
+    position[2][2] === 'X'
+  )
+    return 'X';
+  if (
+    position[0][0] === '0' &&
+    position[1][1] === '0' &&
+    position[2][2] === '0'
+  )
+    return '0';
+  if (
+    position[0][2] === 'X' &&
+    position[1][1] === 'X' &&
+    position[2][0] === 'X'
+  )
+    return 'X';
+  if (
+    position[0][2] === '0' &&
+    position[1][1] === '0' &&
+    position[2][0] === '0'
+  )
+    return '0';
+  return undefined;
 }
 
 module.exports = {
