@@ -1,3 +1,5 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable function-paren-newline */
 /* ************************************************************************************************
  *                                                                                                *
  * Please read the following tutorial before implementing tasks:                                   *
@@ -114,33 +116,137 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
+class SelectorBuild {
+  constructor() {
+    this.positions = [
+      'element',
+      'id',
+      'class',
+      'attr',
+      'pseudoClass',
+      'pseudoElement',
+    ];
+    this.selectors = new Map();
+    this.arrCombine = [];
+  }
+
+  element(value) {
+    this.validUniq('element');
+    this.selectors.set('element', value);
+    this.validPosition();
+    return this;
+  }
+
+  id(value) {
+    this.validUniq('id');
+    this.selectors.set('id', `#${value}`);
+    this.validPosition();
+    return this;
+  }
+
+  class(value) {
+    this.isSelectorHas('class');
+    this.selectors.get('class').push(`.${value}`);
+    this.validPosition();
+    return this;
+  }
+
+  attr(value) {
+    this.isSelectorHas('attr');
+    this.selectors.get('attr').push(`[${value}]`);
+    this.validPosition();
+    return this;
+  }
+
+  pseudoClass(value) {
+    this.isSelectorHas('pseudoClass');
+    this.selectors.get('pseudoClass').push(`:${value}`);
+    this.validPosition();
+    return this;
+  }
+
+  pseudoElement(value) {
+    this.validUniq('pseudoElement');
+    this.selectors.set('pseudoElement', `::${value}`);
+    this.validPosition();
+    return this;
+  }
+
+  combine(selector1, combinator, selector2) {
+    this.arrCombine.push(
+      ...selector1.selectors.values(),
+      ` ${combinator} `,
+      ...selector2.selectors.values(),
+      ...selector2.arrCombine.values()
+    );
+    return this;
+  }
+
+  stringify() {
+    if (this.arrCombine.length > 0) {
+      return this.arrCombine.flat().join('');
+    }
+    return [...this.selectors.values()].flat().join('');
+  }
+
+  isSelectorHas(selector) {
+    if (!this.selectors.has(selector)) {
+      this.selectors.set(selector, []);
+    }
+  }
+
+  validUniq(selector) {
+    if (this.selectors.has(selector)) {
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector'
+      );
+    }
+  }
+
+  validPosition() {
+    const selectorKeys = [...this.selectors.keys()];
+    const currentPos = this.positions.filter((selector) =>
+      // eslint-disable-next-line implicit-arrow-linebreak
+      selectorKeys.includes(selector)
+    );
+    const correctPosition = selectorKeys.some(
+      (selector, i) => i > currentPos.indexOf(selector)
+    );
+    if (correctPosition) {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element'
+      );
+    }
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    return new SelectorBuild().element(value);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    return new SelectorBuild().id(value);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    return new SelectorBuild().class(value);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    return new SelectorBuild().attr(value);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    return new SelectorBuild().pseudoClass(value);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    return new SelectorBuild().pseudoElement(value);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    return new SelectorBuild().combine(selector1, combinator, selector2);
   },
 };
 
